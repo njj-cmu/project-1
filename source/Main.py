@@ -1,4 +1,4 @@
-from ArrayList import ArrayList
+from List.ArrayList import ArrayList
 
 
 #

@@ -125,15 +125,15 @@ class ArrayList:
 
         return True
 
-    def updateItem(self, value: any, setter: Callable[..., None], pos: int) -> bool:
-        """
-        Updates a particular value from an item using a callable set method.
-        :param setter: Setter method required to modify value of an attribute from the element.
-        :param value: New value to replace.
-        :param pos: Position to update into.
-        :return: Flag if update was successful or not.
-        """
-        pass
+    # def updateItem(self, value: any, setter: Callable[..., None], pos: int) -> bool:
+    #     """
+    #     Updates a particular value from an item using a callable set method.
+    #     :param setter: Setter method required to modify value of an attribute from the element.
+    #     :param value: New value to replace.
+    #     :param pos: Position to update into.
+    #     :return: Flag if update was successful or not.
+    #     """
+    #     pass
 
     def remove(self, pos: int) -> any:
         """
