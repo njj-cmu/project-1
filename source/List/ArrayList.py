@@ -1,6 +1,5 @@
 from typing import Callable
-import copy
-
+from typing import List
 
 class ArrayList:
     """
@@ -19,7 +18,7 @@ class ArrayList:
         self.__data = data
         self.__size = 0
 
-    def getSize(self) -> int:
+    def _getSize(self) -> int:
         return self.__size
 
     def __increaseSize(self):
@@ -33,9 +32,9 @@ class ArrayList:
         Increases the size of this list by 2 when full.
         :return:
         """
-        self.__arr += [None] * ((self.getSize() * 2) - 1)
+        self.__arr += [None] * ((self._getSize() * 2) - 1)
 
-    def getDataType(self):
+    def _getDataType(self):
         return self.__data
 
     def _checkDataType(self, item: any) -> bool:
@@ -44,12 +43,32 @@ class ArrayList:
         :param item:
         :return: True if it is an instance. False if not.
         """
-        return isinstance(item, self.getDataType())
+        return isinstance(item, self._getDataType())
 
-    def get(self, pos: int) -> any:
+    def _get(self, pos: int) -> any:
         return self.__arr[pos]
 
-    def insert(self, item: any, pos: int = -1):
+    def _getItemFromValue(self, value: int | float | str) -> List[int, any | None]:
+        """
+        Retrieves the index of the item and the item itself based on a given value.
+        :param value: The value to check inside the array list. The value could be a primitive value like 1, \"Name\", or \"1.02\".
+        :return: The index of the item, and the item itself. Index will be -1 and item will be None 
+            if the value is not found.
+        """
+        index = -1
+        item = None
+        # Check item
+        for i in range(self._getSize()):
+            if self._get(i) == value:
+                index = i 
+                item = self._get(i)
+                break
+
+        return [index, item]
+    
+
+
+    def _insert(self, item: any, pos: int = -1):
         """
         Inserts a new item of the object type to the specified position. Defaults to insert at last.
         :param item: Item to be inserted.
@@ -57,21 +76,21 @@ class ArrayList:
         :return: Nothing.
         """
         assert self._checkDataType(item), "Incorrect data type of item given."
-        assert pos < self.getSize(), "Invalid position."
+        assert pos < self._getSize(), "Invalid position."
 
         # Check if Array List is full
         if self.__size >= len(self.__arr):
             self.__increaseListSize()
 
-        pos = self.getSize() if pos == -1 else pos
+        pos = self._getSize() if pos == -1 else pos
 
-        self.__adjust(self.getSize(), pos, "f")
+        self.__adjust(self._getSize(), pos, "f")
 
         self.__arr[pos] = item
         self.__increaseSize()
 
     @staticmethod
-    def setAdjustCondition(counter: int, sentinel: int, operator: str) -> bool:
+    def _setAdjustCondition(counter: int, sentinel: int, operator: str) -> bool:
         match operator:
             case ">":
                 return counter > sentinel
@@ -98,14 +117,14 @@ class ArrayList:
         :return:
         """
         assert d.casefold() == "f" or d.casefold() == "b", "Incorrect direction."
-        assert 0 <= start <= self.getSize(), "Start index out of bounds."
-        assert 0 <= end <= self.getSize(), "End index out of bounds."
+        assert 0 <= start <= self._getSize(), "Start index out of bounds."
+        assert 0 <= end <= self._getSize(), "End index out of bounds."
 
         d = d.lower()
 
         operator = ">=" if d == "f" else "<="
 
-        while ArrayList.setAdjustCondition(start, end, operator):
+        while ArrayList._setAdjustCondition(start, end, operator):
             if d == "f":
                 self.__arr[start] = self.__arr[start - 1]
                 start -= 1
@@ -113,14 +132,14 @@ class ArrayList:
                 self.__arr[start] = self.__arr[start + 1]
                 start += 1
 
-    def update(self, value: any, pos: int) -> bool:
+    def _update(self, value: any, pos: int) -> bool:
         """
         Updates the element at the index with a new element.
         :param value: New value to replace at index.
         :param pos: Index of element to be updated.
         :return: Flag if update was done or not.
         """
-        assert 0 <= pos < self.getSize(), "Index of element out of bounds."
+        assert 0 <= pos < self._getSize(), "Index of element out of bounds."
         self.__arr[pos] = value
 
         return True
@@ -135,21 +154,21 @@ class ArrayList:
     #     """
     #     pass
 
-    def remove(self, pos: int) -> any:
+    def _remove(self, pos: int) -> any:
         """
         Removes an item from the position of this list.
         :param pos: Position of item to be removed. Must be within 0 and size of this array - 1.
         :return: The item that was removed.
         """
         assert isinstance(pos, int), "Invalid position type given."
-        assert 0 <= pos < self.getSize(), "Removal index out of bounds."
+        assert 0 <= pos < self._getSize(), "Removal index out of bounds."
 
-        item = self.get(pos)
-        self.__adjust(pos, self.getSize(), "b")
+        item = self._get(pos)
+        self.__adjust(pos, self._getSize(), "b")
         self.__decreaseSize()
         return item
 
-    def removeOnValue(self, value: Callable | int | float | str) -> any:
+    def _removeOnValue(self, value: Callable | int | float | str) -> any:
         """
         Removes an item based on the given method to retrieve its value.
         :param value: Method to retrieve value from the array list, or can be an absolute value 
@@ -160,7 +179,7 @@ class ArrayList:
 
         target = None
 
-        for i in range(self.getSize()):
+        for i in range(self._getSize()):
             try:
                 # Check if target is callable
                 target = value()
@@ -168,14 +187,14 @@ class ArrayList:
                 # If it is not callable, try setting as primitive value.
                 target = value
             finally:
-                if self.get(i) == target:
-                    return self.remove(i)
+                if self._get(i) == target:
+                    return self._remove(i)
 
         # If loop terminates, that means that the element with such value was not found.
         print("Item to be removed not found.")
         return None
 
-    def sort(self, comparator: Callable[[any, any], int], new_copy: bool = False) -> 'ArrayList':
+    def _sort(self, comparator: Callable[[any, any], int], new_copy: bool = False) -> 'ArrayList':
         """
         Sorts this array list based on some comparison. May create a sorted copy or not. Utilizes selection sort.
         :param comparator: Comparison method used for sorting elements. The comparison method
@@ -183,25 +202,38 @@ class ArrayList:
         :param new_copy: Flag if this sort operation should produce a copy and not compromise the original array.
         :return:
         """
-        l = deepcopy(self) if new_copy else self
+        l = ArrayList.deepcopy(self) if new_copy else self
 
-        for i in range(0, l.getSize()):
+        for i in range(0, l._getSize()):
             idx = i
-            for j in range(i, l.getSize()):
-                if comparator(l.get(j), l.get(idx)) < 0:
+            for j in range(i, l._getSize()):
+                if comparator(l._get(j), l._get(idx)) < 0:
                     idx = j
 
-            temp = l.get(i)
-            l.update(l.get(idx), i)
-            l.update(temp, idx)
+            temp = l._get(i)
+            l._update(l._get(idx), i)
+            l._update(temp, idx)
 
         return l
+    
+    def deepcopy(source: 'ArrayList') -> 'ArrayList':
+        """
+            Creates a deep copy from one array list to the other array list.
+        """
+        arr = ArrayList(source._getDataType(), source._getSize())
+
+        # Insert each item
+        for i in range(source._getSize()):
+            arr._insert(source._get(i))
+
+        return arr
+
 
     def __str__(self) -> str:
         s = "[ "
 
         for i in range(self.getSize()):
-            s += str(self.get(i))
+            s += str(self._get(i))
 
             if (i + 1) < self.getSize():
                 s += ", "
@@ -209,16 +241,3 @@ class ArrayList:
         s += " ]"
 
         return s
-
-
-def deepcopy(source: ArrayList) -> ArrayList:
-    """
-        Creates a deep copy from one array list to the other array list.
-    """
-    arr = ArrayList(source.getDataType(), source.getSize())
-
-    # Insert each item
-    for i in range(source.getSize()):
-        arr.insert(source.get(i))
-
-    return arr
