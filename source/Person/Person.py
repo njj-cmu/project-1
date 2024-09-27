@@ -1,7 +1,12 @@
 class Person:
 
-    def __init__(self, fname: str, lname: str, age: str, gender: str, bio: str):
+    def __init__(self, fname: str, lname: str, age: int, gender: str, bio: str):
+        assert isinstance(fname, str), "Invalid first name data type."
+        assert isinstance(lname ,str), "Invalid last name data type."
+        assert isinstance(age ,int), "Invalid age data type."
+        assert isinstance(bio ,str), "Invalid person biography data type."
         assert gender in ["Male", "Female"], "Invalid gender input. Must be \'Male\' or \'Female\' only."
+
         self.__fname = fname
         self.__lname = lname 
         self.__age = age 

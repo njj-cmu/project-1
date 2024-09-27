@@ -68,12 +68,12 @@ class ArrayList:
     
 
 
-    def _insert(self, item: any, pos: int = -1):
+    def _insert(self, item: any, pos: int = -1) -> bool:
         """
         Inserts a new item of the object type to the specified position. Defaults to insert at last.
         :param item: Item to be inserted.
         :param pos: Position to insert into. Must not exceed current number of elements of array list.
-        :return: Nothing.
+        :return: Flag if insertion was successful or not. May raise an error if assertion is incorrect.
         """
         assert self._checkDataType(item), "Incorrect data type of item given."
         assert pos < self._getSize(), "Invalid position."
@@ -88,6 +88,7 @@ class ArrayList:
 
         self.__arr[pos] = item
         self.__increaseSize()
+        return True
 
     @staticmethod
     def _setAdjustCondition(counter: int, sentinel: int, operator: str) -> bool:
